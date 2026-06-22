@@ -1,0 +1,1924 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Genz Fitness Sivakasi - Dynamic Portal</title>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <style>
+        :root {
+            --neon-red: #ff2a2f;
+            --dark-void: rgba(13, 13, 14, 0.85);
+            --card-gray: rgba(21, 22, 25, 0.9);
+            --border-glow: #3a3d45;
+            --text-glow: #ffffff;
+            --text-ghost: #a1a1aa;
+            --success-neon: #39ff14;
+            --sms-blue: #007aff;
+            --warning-orange: #ffaa00;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.85)), url('gym.jpeg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            padding: 40px 20px;
+            overflow-x: hidden;
+        }
+
+        /* NAVIGATION TABS */
+        .nav-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 14px;
+            background: var(--card-gray);
+            border: 2px solid var(--border-glow);
+            color: var(--text-ghost);
+            text-align: center;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.82rem;
+            letter-spacing: 1px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tab.active {
+            border-color: var(--neon-red);
+            color: #fff;
+            background: rgba(255, 42, 47, 0.1);
+            box-shadow: 0 0 15px rgba(255, 42, 47, 0.2);
+        }
+
+        /* AUTO-PURGE NOTICE SYSTEM BARS */
+        .status-banner {
+            width: 100%;
+            max-width: 950px;
+            padding: 14px 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid transparent;
+            gap: 15px;
+        }
+        .status-good {
+            background: rgba(57, 255, 20, 0.1);
+            border-color: var(--success-neon);
+            color: var(--success-neon);
+        }
+        .status-warn {
+            background: rgba(255, 170, 0, 0.1);
+            border-color: var(--warning-orange);
+            color: var(--warning-orange);
+        }
+
+        .status-details-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        /* MANUAL FULL RESET BUTTON */
+        .btn-purge-now {
+            background: var(--neon-red);
+            color: #fff;
+            border: none;
+            padding: 8px 14px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            border-radius: 6px;
+            cursor: pointer;
+            width: auto;
+            margin-top: 0;
+            transition: all 0.2s ease;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 8px rgba(255, 42, 47, 0.3);
+        }
+
+        .btn-purge-now:hover {
+            background: #e01b20;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255, 42, 47, 0.5);
+        }
+
+        @keyframes cardEntrance {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 20px rgba(255, 42, 47, 0.15); }
+            50% { box-shadow: 0 0 35px rgba(255, 42, 47, 0.35); }
+            100% { box-shadow: 0 0 20px rgba(255, 42, 47, 0.15); }
+        }
+
+        .gym-card {
+            background: var(--card-gray);
+            border: 2px solid var(--border-glow);
+            width: 100%;
+            max-width: 460px;
+            border-radius: 20px;
+            padding: 40px 30px;
+            backdrop-filter: blur(10px);
+            animation: cardEntrance 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards, pulseGlow 4s infinite ease-in-out;
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        /* WEEKLY AUTOMATED BROADCAST INTERFACE */
+        .broadcast-card {
+            background: var(--card-gray);
+            border: 2px dashed var(--warning-orange);
+            width: 100%;
+            max-width: 950px;
+            border-radius: 20px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            margin-bottom: 20px;
+        }
+        
+        .broadcast-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .broadcast-header h2 {
+            color: #fff;
+            font-size: 1.25rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-broadcast {
+            background: var(--warning-orange);
+            color: #000;
+            font-weight: bold;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            width: auto;
+            margin-top: 0;
+            transition: all 0.2s ease;
+        }
+
+        .btn-broadcast:hover {
+            background: #ffc83b;
+            box-shadow: 0 0 15px rgba(255, 170, 0, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .btn-broadcast-all {
+            background: #25D366;
+            color: white;
+            font-weight: 900;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            width: auto;
+            margin-top: 0;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 10px rgba(37, 211, 102, 0.2);
+        }
+
+        .btn-broadcast-all:hover {
+            background: #20ba5a;
+            box-shadow: 0 0 15px rgba(37, 211, 102, 0.5);
+            transform: translateY(-1px);
+        }
+
+        /* BROADCAST DISPATCH DESK */
+        .broadcast-desk {
+            margin-top: 20px;
+            background: rgba(13, 13, 14, 0.6);
+            border: 1px solid var(--border-glow);
+            border-radius: 12px;
+            padding: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .broadcast-row-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid rgba(58, 61, 69, 0.4);
+        }
+
+        .broadcast-row-item:last-child {
+            border-bottom: none;
+        }
+
+        .broadcast-row-info {
+            color: #fff;
+            font-size: 0.9rem;
+        }
+
+        .broadcast-row-info span {
+            color: var(--text-ghost);
+            font-size: 0.8rem;
+        }
+
+        .btn-send-mini {
+            background: #25D366;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            width: auto;
+            margin: 0;
+            text-transform: uppercase;
+        }
+        .btn-send-mini:hover {
+            background: #20ba5a;
+        }
+        .btn-send-mini.fired {
+            background: var(--border-glow);
+            color: var(--text-ghost);
+            cursor: not-allowed;
+        }
+
+        /* HEADER ANIMATIONS */
+        @keyframes headingSlideRight {
+            0% {
+                opacity: 0;
+                transform: translateX(-60px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            text-transform: uppercase;
+            color: #fff;
+            animation: headingSlideRight 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .header h1 span {
+            color: var(--neon-red);
+            text-shadow: 0 0 15px rgba(255, 42, 47, 0.6);
+        }
+
+        .header p {
+            color: var(--text-ghost);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-top: 5px;
+            display: block;
+        }
+
+        .animate-slide-heading {
+            animation: headingSlideRight 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .input-box {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 8px;
+            color: var(--text-ghost);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 14px;
+            background: rgba(28, 29, 34, 0.8);
+            border: 1px solid var(--border-glow);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--neon-red);
+            box-shadow: 0 0 15px rgba(255, 42, 47, 0.4);
+            background: #1c1d22;
+        }
+
+        button {
+            width: 100%;
+            padding: 16px;
+            background: var(--neon-red);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            margin-top: 12px;
+        }
+
+        button:hover {
+            background: #e01b20;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 42, 47, 0.4);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            border: 1px solid var(--border-glow);
+            color: var(--text-ghost);
+        }
+
+        .btn-ghost:hover {
+            background: rgba(28, 29, 34, 0.6);
+            color: #fff;
+            border-color: #fff;
+        }
+
+        .btn-whatsapp { background: #25D366; margin-bottom: 4px; }
+        .btn-whatsapp:hover { background: #20ba5a; box-shadow: 0 5px 15px rgba(37, 211, 102, 0.4); }
+
+        #printableReceipt {
+            background: rgba(22, 23, 26, 0.95);
+            border: 2px dashed var(--neon-red);
+            padding: 30px 25px;
+            border-radius: 16px;
+            margin: 20px 0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .receipt-header-title {
+            text-align: center;
+            font-weight: 800;
+            font-size: 1.3rem;
+            text-transform: uppercase;
+            color: #fff;
+            letter-spacing: 1px;
+        }
+        
+        .receipt-header-subtitle {
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--text-ghost);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 2px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-glow);
+        }
+
+        .receipt-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+        }
+
+        .receipt-label-white {
+            color: var(--text-ghost) !important;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .receipt-row.total {
+            border-top: 2px dashed var(--border-glow);
+            padding-top: 18px;
+            margin-top: 18px;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .hidden { display: none !important; }
+        .value-ghost { color: #ffffff !important; font-weight: 600; text-align: right; }
+
+        .system-invoice-footer {
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-glow);
+            text-align: center;
+            font-size: 0.7rem;
+            color: var(--text-ghost);
+            letter-spacing: 0.5px;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .history-card {
+            background: var(--card-gray);
+            border: 2px solid var(--border-glow);
+            width: 100%;
+            max-width: 950px;
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            margin-top: 10px;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-glow);
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
+
+        .history-header h2 {
+            color: #fff;
+            font-size: 1.25rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-excel {
+            background: transparent;
+            border: 1px dashed var(--success-neon);
+            color: var(--success-neon);
+            padding: 6px 16px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-radius: 6px;
+            width: auto;
+            margin-top: 0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-excel:hover { background: rgba(57, 255, 20, 0.1); }
+        .filter-container { margin-bottom: 20px; }
+        .table-container { overflow-x: auto; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+
+        th {
+            color: var(--text-ghost);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            padding: 12px 10px;
+            border-bottom: 2px solid var(--border-glow);
+        }
+
+        td {
+            color: #fff;
+            padding: 12px 10px;
+            border-bottom: 1px solid rgba(58, 61, 69, 0.4);
+        }
+
+        .text-neon { color: var(--neon-red); font-family: monospace; font-weight: bold; }
+        .text-success { color: var(--success-neon); font-weight: bold; }
+        .text-warning { color: var(--warning-orange); font-weight: bold; }
+        .no-data { color: var(--text-ghost); text-align: center; padding: 30px 0; font-style: italic; }
+
+        .action-btn-group {
+            display: flex;
+            gap: 8px;
+        }
+        .btn-action-edit {
+            background: transparent;
+            border: 1px solid var(--sms-blue);
+            color: var(--sms-blue);
+            padding: 4px 8px;
+            font-size: 0.75rem;
+            border-radius: 4px;
+            cursor: pointer;
+            width: auto;
+            margin: 0;
+        }
+        .btn-action-edit:hover {
+            background: rgba(0, 122, 255, 0.1);
+        }
+        .btn-action-delete {
+            background: transparent;
+            border: 1px solid var(--neon-red);
+            color: var(--neon-red);
+            padding: 4px 8px;
+            font-size: 0.75rem;
+            border-radius: 4px;
+            cursor: pointer;
+            width: auto;
+            margin: 0;
+        }
+        .btn-action-delete:hover {
+            background: rgba(255, 42, 47, 0.1);
+        }
+
+        /* EXCEL IMPORT INTERFACE styling */
+        .excel-dropzone-wrapper {
+            border: 2px dashed var(--border-glow);
+            padding: 15px;
+            border-radius: 12px;
+            background: rgba(28, 29, 34, 0.4);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            transition: all 0.3s ease;
+        }
+        .excel-dropzone-wrapper:hover {
+            border-color: var(--success-neon);
+            background: rgba(57, 255, 20, 0.02);
+        }
+        .dropzone-inner-hint {
+            color: var(--text-ghost);
+            font-size: 0.8rem;
+        }
+        .dropzone-inner-hint strong {
+            color: #fff;
+        }
+        .file-input-hidden {
+            display: none;
+        }
+        .btn-trigger-upload {
+            background: transparent;
+            border: 1px solid var(--success-neon);
+            color: var(--success-neon);
+            padding: 8px 16px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            border-radius: 6px;
+            cursor: pointer;
+            width: auto;
+            margin-top: 0;
+        }
+        .btn-trigger-upload:hover {
+            background: var(--success-neon);
+            color: #000;
+        }
+
+        @media print {
+            body {
+                background: #ffffff !important;
+                color: #111111 !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                display: block !important;
+            }
+            .nav-container, .header, form, button, .btn-ghost, .btn-whatsapp, .history-card, .status-banner, #storageAlertBar, .broadcast-card {
+                display: none !important;
+            }
+            .gym-card {
+                background: transparent !important;
+                border: none !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+                margin: 0 auto !important;
+                max-width: 100% !important;
+                animation: none !important;
+                backdrop-filter: none !important;
+            }
+            #invoiceDashboard {
+                display: block !important;
+                width: 100% !important;
+            }
+            #printableReceipt {
+                display: block !important;
+                background: #ffffff !important;
+                color: #111111 !important;
+                border: 2px solid #111111 !important;
+                box-shadow: none !important;
+                padding: 40px !important;
+                margin: 20px auto !important;
+                max-width: 550px !important;
+                border-radius: 0 !important;
+            }
+            .receipt-header-title {
+                color: #000000 !important;
+                font-size: 1.6rem !important;
+            }
+            .receipt-header-subtitle {
+                color: #555555 !important;
+                border-bottom: 2px solid #111111 !important;
+            }
+            .receipt-label-white {
+                color: #444444 !important;
+                font-weight: 600 !important;
+            }
+            .value-ghost {
+                color: #000000 !important;
+                font-weight: 700 !important;
+            }
+            .text-neon {
+                color: #000000 !important;
+                font-weight: 800 !important;
+            }
+            .receipt-row.total {
+                border-top: 2px dashed #111111 !important;
+                padding-top: 20px !important;
+                font-size: 1.3rem !important;
+            }
+            .receipt-row.total span {
+                color: #000000 !important;
+            }
+            .system-invoice-footer {
+                color: #555555 !important;
+                border-top: 2px solid #111111 !important;
+                font-size: 0.75rem !important;
+                font-weight: bold !important;
+                margin-top: 30px !important;
+                padding-top: 15px !important;
+            }
+            #printableReceipt::after {
+                content: "OFFICIAL SYSTEM COPY // GENZ FITNESS";
+                display: block;
+                text-align: center;
+                font-size: 0.65rem;
+                letter-spacing: 2px;
+                color: #777777;
+                margin-top: 25px;
+                font-weight: bold;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="storageAlertBar" class="status-banner status-good">
+        <div class="status-details-wrapper">
+            <span id="storageMessage">⚡ Storage Profile: Stable (0MB Used)</span>
+            <span id="storageDateCheck" style="opacity: 0.8; font-size: 0.75rem;">Engine Monitoring Active</span>
+        </div>
+        <button class="btn-purge-now" onclick="manualForceClearLedger()"> WIPE DATA CACHE (0MB)</button>
+    </div>
+
+    <div class="nav-container">
+        <div id="tabReg" class="nav-tab active" onclick="switchView('REGISTRATION')">⚡ New Registration</div>
+        <div id="tabBill" class="nav-tab" onclick="switchView('BILLING')">💵 Bill Gym Fee</div>
+        <div id="tabAudit" class="nav-tab" onclick="switchView('AUDIT')">🔍 Payment Audit Matrix</div>
+    </div>
+
+    <div class="gym-card">
+        <div class="header">
+            <h1 id="mainPortalTitle">GENZ <span>FITNESS</span></h1>
+            <p id="subPortalTitle" class="animate-slide-heading">SIVAKASI // NEW REGISTRATION</p>
+        </div>
+
+        <form id="registrationForm">
+            <input type="hidden" id="regEditId" value="">
+            <div class="input-box">
+                <label>Full Name</label>
+                <input type="text" id="regName" placeholder="e.g. Rahul Kumar" required>
+            </div>
+            <div class="input-box">
+                <label>Phone Number</label>
+                <input type="tel" id="regPhone" placeholder="10-digit mobile number" pattern="[0-9]{10}" required>
+            </div>
+            <div class="input-grid">
+                <div class="input-box">
+                    <label>Date of Birth</label>
+                    <input type="date" id="regDob" required>
+                </div>
+                <div class="input-box">
+                    <label>Age</label>
+                    <input type="number" id="regAge" placeholder="Age" min="10" max="100" required>
+                </div>
+            </div>
+            <div class="input-grid">
+                <div class="input-box">
+                    <label>Weight (kg)</label>
+                    <input type="number" id="regWeight" placeholder="Weight" step="0.1" required>
+                </div>
+                <div class="input-box">
+                    <label>Height (cm)</label>
+                    <input type="number" id="regHeight" placeholder="Height" required>
+                </div>
+            </div>
+            <div class="input-box">
+                <label>Blood Group</label>
+                <select id="regBlood">
+                    <option value="Unknown">Don't Know / Select</option>
+                    <option value="A+">A+</option>
+                    <option value="A-">A-</option>
+                    <option value="B+">B+</option>
+                    <option value="B-">B-</option>
+                    <option value="O+">O+</option>
+                    <option value="O-">O-</option>
+                    <option value="AB+">AB+</option>
+                    <option value="AB-">AB-</option>
+                </select>
+            </div>
+            <div class="input-box">
+                <label>Emergency Contact No.</label>
+                <input type="tel" id="regEmergency" placeholder="Guardian Phone" pattern="[0-9]{10}">
+            </div>
+            <button type="submit" id="regSubmitBtn">Complete Registration</button>
+        </form>
+
+        <form id="billingForm" class="hidden">
+            <input type="hidden" id="billEditId" value="">
+            <div class="input-box">
+                <label>Member Full Name</label>
+                <input type="text" id="memberName" placeholder="e.g. Rahul Kumar" required>
+            </div>
+            <div class="input-box">
+                <label>Phone Number</label>
+                <input type="tel" id="memberPhone" placeholder="10-digit mobile number" pattern="[0-9]{10}" required>
+            </div>
+            <div class="input-box">
+                <label>Payment For Month</label>
+                <select id="paymentMonth" required><option value="" disabled selected>Choose Month</option></select>
+            </div>
+            <div class="input-box">
+                <label>Membership Plan</label>
+                <select id="memberPlan">
+                    <option value="Basic Pass (₹500)">Basic Pass (₹500)</option>
+                    <option value="Premium Pass (₹1000)">Premium Pass (₹1000)</option>
+                </select>
+            </div>
+            <div class="input-box">
+                <label>Payment Status</label>
+                <select id="paymentStatus">
+                    <option value="Paid">Paid</option>
+                    <option value="Unpaid">Unpaid</option>
+                </select>
+            </div>
+            <button type="submit" id="billSubmitBtn">Submit & Lock Bill</button>
+        </form>
+
+        <div id="invoiceDashboard" class="hidden">
+            <div id="printableReceipt">
+                <div class="receipt-header-title">Genz Fitness Sivakasi</div>
+                <div class="receipt-header-subtitle">Official Transaction Summary</div>
+                <div id="receiptDynamicContents"></div>
+                <div class="system-invoice-footer">This is a system generated invoice and does not require a physical signature.</div>
+            </div>
+            <button class="btn-whatsapp" onclick="triggerDirectWhatsApp()">Resend via WhatsApp</button>
+            <button onclick="downloadInvoicePDF()">Download Document</button>
+            <button class="btn-ghost" onclick="resetActiveForm()">New Record</button>
+        </div>
+    </div>
+
+    <div class="history-card hidden" id="auditSection">
+        <div class="history-header">
+            <div>
+                <h2>Roster Reconciliation Matrix</h2>
+                <p style="color: var(--text-ghost); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px;">
+                    Cross-referencing Complete Roster entries against payment history logs
+                </p>
+            </div>
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <button class="btn-excel" onclick="downloadAuditMatrixXLSX()">Download Audit</button>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <label style="margin-bottom: 0; white-space: nowrap;">Audit Month:</label>
+                    <select id="auditMonthFilter" style="padding: 8px; border-radius: 6px; background: #1c1d22; color: #fff; border: 1px solid var(--border-glow); width: auto; margin-top: 0;" onchange="renderPaymentAuditMatrix()"></select>
+                </div>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+            <div style="flex: 1; background: rgba(57, 255, 20, 0.05); border: 1px solid var(--success-neon); padding: 15px; border-radius: 10px; text-align: center;">
+                <span style="display: block; font-size: 0.75rem; color: var(--text-ghost); text-transform: uppercase; margin-bottom: 4px;">Paid Profiles</span>
+                <span id="auditCountPaid" style="font-size: 1.8rem; font-weight: bold; color: var(--success-neon);">0</span>
+            </div>
+            <div style="flex: 1; background: rgba(255, 42, 47, 0.05); border: 1px solid var(--neon-red); padding: 15px; border-radius: 10px; text-align: center;">
+                <span style="display: block; font-size: 0.75rem; color: var(--text-ghost); text-transform: uppercase; margin-bottom: 4px;">Pending / Defaulters</span>
+                <span id="auditCountUnpaid" style="font-size: 1.8rem; font-weight: bold; color: var(--neon-red);">0</span>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 200px; gap: 15px; margin-bottom: 20px;">
+            <input type="text" id="auditSearchInput" placeholder="🔍 Live filter matrix by member name..." style="padding: 12px;" onkeyup="renderPaymentAuditMatrix()">
+            <select id="auditStatusFilter" style="padding: 12px;" onchange="renderPaymentAuditMatrix()">
+                <option value="ALL">Show Everyone</option>
+                <option value="PAID">Only Paid</option>
+                <option value="UNPAID">Defaulters / Pending</option>
+            </select>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Member Profile</th>
+                        <th>Phone Number</th>
+                        <th>Target Month</th>
+                        <th>Current State</th>
+                        <th>Action Execution</th>
+                    </tr>
+                </thead>
+                <tbody id="auditTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="broadcast-card" id="weeklyBroadcastSection">
+        <div class="broadcast-header">
+            <div>
+                <h2>Weekly WhatsApp Broadcaster</h2>
+                <p style="color: var(--text-ghost); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px;">
+                    Schedule State: <span id="broadcastStatusText" style="color: var(--success-neon); font-weight: bold;">Loading metrics...</span>
+                </p>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button id="sendBroadcastBtn" class="btn-broadcast" onclick="triggerWeeklyWhatsAppBroadcast()">⚙️ Open Desk</button>
+                <button id="broadcastAllBtn" class="btn-broadcast-all hidden" onclick="startAutomatedBroadcastQueue()">🚀 Launch Broadcast Sequence</button>
+            </div>
+        </div>
+        <div id="broadcastDeskWrapper" class="broadcast-desk hidden"></div>
+    </div>
+
+    <div class="history-card" id="ledgerSection">
+        <div class="history-header">
+            <h2 id="ledgerTitle">Active Register History</h2>
+            <button class="btn-excel" onclick="downloadLedgerXLSX()">Download</button>
+        </div>
+
+        <!-- RE-DESIGNED ROBUST EXCEL IMPORT BAR -->
+        <div class="excel-dropzone-wrapper">
+            <div class="dropzone-inner-hint">
+                <span>🔄 <strong>Smart Sync:</strong> Upload your downloaded Excel file here to restore or merge your data.</span>
+            </div>
+            <button class="btn-trigger-upload" onclick="document.getElementById('excelFileInputEngine').click()">Choose Excel Sheet</button>
+            <input type="file" id="excelFileInputEngine" class="file-input-hidden" accept=".xlsx, .xls" onchange="processImportedExcelPayload(this)">
+        </div>
+
+        <div class="filter-container">
+            <input type="text" id="historySearchInput" placeholder="⚡ Live Search items..." onkeyup="renderCurrentTable()">
+        </div>
+        <div class="table-container">
+            <table id="mainLedgerTable">
+                <thead><tr id="tableHeaderRow"></tr></thead>
+                <tbody id="historyTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        let currentMode = "REGISTRATION"; 
+        let msgPayload = "";
+        let currentPhoneNum = "";
+
+        let regDownloadCount = 0;
+        let billDownloadCount = 0;
+
+        // Broadcast Queue Trackers
+        let broadcastQueue = [];
+        let currentQueueIndex = 0;
+        let isQueueRunning = false;
+
+        function switchView(mode) {
+            currentMode = mode;
+            document.getElementById('invoiceDashboard').classList.add('hidden');
+            document.getElementById('historySearchInput').value = "";
+            resetActiveFormFieldsOnly();
+
+            const mainTitle = document.getElementById('mainPortalTitle');
+            const subTitle = document.getElementById('subPortalTitle');
+
+            mainTitle.style.animation = 'none';
+            mainTitle.offsetHeight; 
+            mainTitle.style.animation = null;
+
+            subTitle.classList.remove('animate-slide-heading');
+            subTitle.offsetHeight; 
+            subTitle.classList.add('animate-slide-heading');
+
+            if (mode === "REGISTRATION") {
+                document.getElementById('tabReg').classList.add('active');
+                document.getElementById('tabBill').classList.remove('active');
+                document.getElementById('tabAudit').classList.remove('active');
+                document.getElementById('registrationForm').classList.remove('hidden');
+                document.getElementById('billingForm').classList.add('hidden');
+                document.getElementById('ledgerSection').classList.remove('hidden');
+                document.getElementById('auditSection').classList.add('hidden');
+                subTitle.innerText = "SIVAKASI // NEW REGISTRATION";
+                document.getElementById('ledgerTitle').innerText = "Active Register History";
+                document.getElementById('historySearchInput').placeholder = "⚡ Live Search by ID, Name, or Date...";
+            } else if (mode === "BILLING") {
+                document.getElementById('tabReg').classList.remove('active');
+                document.getElementById('tabBill').classList.add('active');
+                document.getElementById('tabAudit').classList.remove('active');
+                document.getElementById('registrationForm').classList.add('hidden');
+                document.getElementById('billingForm').classList.remove('hidden');
+                document.getElementById('ledgerSection').classList.remove('hidden');
+                document.getElementById('auditSection').classList.add('hidden');
+                subTitle.innerText = "SIVAKASI // MEMBERSHIP FEE";
+                document.getElementById('ledgerTitle').innerText = "Payment Ledger History";
+                document.getElementById('historySearchInput').placeholder = "⚡ Live Search by ID, Name, Date, or Status (Paid/Unpaid)...";
+            } else if (mode === "AUDIT") {
+                document.getElementById('tabReg').classList.remove('active');
+                document.getElementById('tabBill').classList.remove('active');
+                document.getElementById('tabAudit').classList.add('active');
+                document.getElementById('registrationForm').classList.add('hidden');
+                document.getElementById('billingForm').classList.add('hidden');
+                document.getElementById('ledgerSection').classList.add('hidden');
+                document.getElementById('auditSection').classList.remove('hidden');
+                subTitle.innerText = "SIVAKASI // FEE COMPLIANCE";
+                renderPaymentAuditMatrix();
+            }
+            renderCurrentTable();
+        }
+
+        function populateDynamicMonths() {
+            const monthSelect = document.getElementById('paymentMonth');
+            const auditSelect = document.getElementById('auditMonthFilter');
+            if(!monthSelect) return;
+            
+            monthSelect.innerHTML = '<option value="" disabled selected>Choose Month</option>';
+            if(auditSelect) auditSelect.innerHTML = '';
+            
+            const monthsArray = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            const systemDate = new Date();
+            let startMonth = systemDate.getMonth(); 
+            let startYear = systemDate.getFullYear(); 
+
+            for (let i = 0; i < 12; i++) {
+                let targetMonthIndex = (startMonth + i) % 12;
+                let targetYear = startYear + Math.floor((startMonth + i) / 12);
+                let dynamicValue = `${monthsArray[targetMonthIndex]} ${targetYear}`;
+                
+                let opt = document.createElement('option');
+                opt.value = dynamicValue; opt.innerText = dynamicValue;
+                monthSelect.appendChild(opt);
+
+                if(auditSelect) {
+                    let optAudit = document.createElement('option');
+                    optAudit.value = dynamicValue; optAudit.innerText = dynamicValue;
+                    auditSelect.appendChild(optAudit);
+                }
+            }
+        }
+
+        function getSystemFormattedTimestamp() {
+            const now = new Date();
+            const day = String(now.getDate()).padStart(2, '0');
+            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            const month = months[now.getMonth()];
+            const year = now.getFullYear();
+            
+            let hours = now.getHours();
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; 
+            const strTime = String(hours).padStart(2, '0') + "_" + minutes + "_" + ampm;
+            
+            return `${day}_${month}_${year}_${strTime}`;
+        }
+
+        // --- SUBMISSIONS ENGINE ---
+        document.getElementById('registrationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const editId = document.getElementById('regEditId').value;
+            const name = document.getElementById('regName').value;
+            const phone = document.getElementById('regPhone').value;
+            const dob = document.getElementById('regDob').value;
+            const age = document.getElementById('regAge').value;
+            const weight = document.getElementById('regWeight').value;
+            const height = document.getElementById('regHeight').value;
+            const blood = document.getElementById('regBlood').value;
+            const emergency = document.getElementById('regEmergency').value || "N/A";
+
+            let registrations = JSON.parse(localStorage.getItem('genz_gym_registrations')) || [];
+            let targetId, dateStr;
+
+            if (editId) {
+                targetId = parseInt(editId);
+                const existingIndex = registrations.findIndex(i => i.id === targetId);
+                if (existingIndex !== -1) {
+                    dateStr = registrations[existingIndex].date;
+                    registrations[existingIndex] = { id: targetId, date: dateStr, name, phone, dob, age, weight, height, blood, emergency };
+                }
+            } else {
+                let regCounter = parseInt(localStorage.getItem('genz_reg_counter') || "0") + 1;
+                localStorage.setItem('genz_reg_counter', regCounter);
+                targetId = regCounter;
+                const now = new Date();
+                dateStr = now.toLocaleDateString('en-IN', {day: '2-digit', month: 'short', year: 'numeric'});
+                const entry = { id: targetId, date: dateStr, name, phone, dob, age, weight, height, blood, emergency };
+                registrations.unshift(entry);
+            }
+
+            localStorage.setItem('genz_gym_registrations', JSON.stringify(registrations));
+            currentPhoneNum = phone;
+            
+            msgPayload = `Welcome ${name}! Your registration at Genz Fitness Sivakasi is successful. ID: #REG-${targetId}.`;
+
+            document.getElementById('receiptDynamicContents').innerHTML = `
+                <div class="receipt-row"><span class="receipt-label-white">Reg ID:</span><span class="text-neon">#REG-${targetId}</span></div>
+                <div class="receipt-row"><span class="receipt-label-white">Date:</span><span class="value-ghost">${dateStr}</span></div>
+                <div class="receipt-row"><span class="receipt-label-white">Name:</span><span class="value-ghost">${name}</span></div>
+                <div class="receipt-row"><span class="receipt-label-white">Phone:</span><span class="value-ghost">+91 ${phone}</span></div>
+                <div class="receipt-row"><span class="receipt-label-white">Age / DOB:</span><span class="value-ghost">${age} Yrs (${dob})</span></div>
+                <div class="receipt-row"><span class="receipt-label-white">Metrics:</span><span class="value-ghost">${weight} kg / ${height} cm</span></div>
+                <div class="receipt-row"><span class="receipt-label-white">Blood Group:</span><span class="value-ghost">${blood}</span></div>
+                <div class="receipt-row total"><span class="receipt-label-white">Status:</span><span style="color:var(--success-neon)">REGISTERED</span></div>
+            `;
+
+            document.getElementById('registrationForm').classList.add('hidden');
+            document.getElementById('invoiceDashboard').classList.remove('hidden');
+            renderCurrentTable();
+            updateStorageMetricsSummary();
+            updateWeeklyBroadcastDashboardIndicator();
+            triggerDirectWhatsApp();
+        });
+
+        document.getElementById('billingForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const editId = document.getElementById('billEditId').value;
+            const name = document.getElementById('memberName').value;
+            const phone = document.getElementById('memberPhone').value;
+            const month = document.getElementById('paymentMonth').value;
+            const plan = document.getElementById('memberPlan').value;
+            const status = document.getElementById('paymentStatus').value;
+
+            let history = JSON.parse(localStorage.getItem('genz_gym_history')) || [];
+            const priceMatch = plan.match(/\(₹(\d+)\)/);
+            const cost = priceMatch ? `₹${priceMatch[1]}.00` : "₹500.00";
+            let targetId, dateStr;
+
+            if (editId) {
+                targetId = parseInt(editId);
+                const existingIndex = history.findIndex(i => i.id === targetId);
+                if (existingIndex !== -1) {
+                    dateStr = history[existingIndex].date;
+                    history[existingIndex] = { id: targetId, date: dateStr, name, phone, month, plan: plan.split(' (')[0], cost, status };
+                }
+            } else {
+                let billCounter = parseInt(localStorage.getItem('genz_receipt_counter') || "0") + 1;
+                localStorage.setItem('genz_receipt_counter', billCounter);
+                targetId = billCounter;
+                const now = new Date();
+                dateStr = now.toLocaleDateString('en-IN', {day: '2-digit', month: 'short', year: 'numeric'});
+                const entry = { id: targetId, date: dateStr, name, phone, month, plan: plan.split(' (')[0], cost, status };
+                history.unshift(entry);
+            }
+
+            localStorage.setItem('genz_gym_history', JSON.stringify(history));
+            currentPhoneNum = phone;
+            
+            msgPayload = `Hi ${name}, your payment of ${cost} for ${month} has been received at Genz Fitness Sivakasi!`;
+
+            document.getElementById('receiptDynamicContents').innerHTML = `
+                <div class="receipt-row"><span class="receipt-label-white">Receipt ID:</span><span class="text-neon">#GZ-${targetId}</span></div>
+                <div class="receipt-row"><span class="receipt-label-white">Date:</span><span class="value-ghost">${dateStr}</span></div>
+                <div class="receipt-row"><span class="receipt-label-white">Name:</span><span class="value-ghost">${name}</span></div>
+                <div class="receipt-row"><span class="receipt-label-white">Phone:</span><span class="value-ghost">+91 ${phone}</span></div>
+                <div class="receipt-row"><span class="receipt-label-white">Plan Segment:</span><span class="value-ghost">${plan.split(' (')[0]}</span></div>
+                <div class="receipt-row"><span class="receipt-label-white">Fees Month:</span><span class="value-ghost" style="font-weight:bold;">${month}</span></div>
+                <div class="receipt-row total"><span class="receipt-label-white">Total (${status}):</span><span style="color:${status === 'Paid' ? 'var(--success-neon)' : 'var(--neon-red)'}">${cost}</span></div>
+            `;
+
+            document.getElementById('billingForm').classList.add('hidden');
+            document.getElementById('invoiceDashboard').classList.remove('hidden');
+            renderCurrentTable();
+            updateStorageMetricsSummary();
+            updateWeeklyBroadcastDashboardIndicator();
+            triggerDirectWhatsApp();
+        });
+
+        function renderCurrentTable() {
+            const headerRow = document.getElementById('tableHeaderRow');
+            const tableBody = document.getElementById('historyTableBody');
+            const search = document.getElementById('historySearchInput').value.toLowerCase().trim();
+
+            if (currentMode === "REGISTRATION") {
+                headerRow.innerHTML = `<th>ID</th><th>Date</th><th>Profile</th><th>Age/DOB</th><th>Metrics</th><th>Emergency Contact</th><th>Actions</th>`;
+                let dataset = JSON.parse(localStorage.getItem('genz_gym_registrations')) || [];
+
+                if (search) {
+                    dataset = dataset.filter(i => 
+                        `#reg-${i.id}`.includes(search) || 
+                        i.id.toString().includes(search) || 
+                        i.name.toLowerCase().includes(search) || 
+                        i.date.toLowerCase().includes(search)
+                    );
+                }
+
+                if(dataset.length === 0) {
+                    tableBody.innerHTML = `<tr><td colspan="7" class="no-data">No registration metrics discovered.</td></tr>`;
+                    return;
+                }
+
+                tableBody.innerHTML = dataset.map(i => `
+                    <tr>
+                        <td class="text-neon">#REG-${i.id}</td>
+                        <td style="font-size:0.8rem; color:var(--text-ghost);">${i.date}</td>
+                        <td><strong>${i.name}</strong><br><span style="font-size:0.75rem; color:var(--text-ghost);">+91 ${i.phone}</span></td>
+                        <td>${i.age} Yrs<br><span style="font-size:0.75rem; color:var(--text-ghost);">${i.dob}</span></td>
+                        <td>H: ${i.height}cm | W: ${i.weight}kg<br><span style="font-size:0.75rem; color:var(--neon-red); font-weight:bold;">Blood: ${i.blood}</span></td>
+                        <td style="font-size:0.85rem;">+91 ${i.emergency}</td>
+                        <td>
+                            <div class="action-btn-group">
+                                <button class="btn-action-edit" onclick="initiateEditRegistration(${i.id})">Edit</button>
+                                <button class="btn-action-delete" onclick="executeDeleteRegistration(${i.id})">Delete</button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+
+            } else if (currentMode === "BILLING") {
+                headerRow.innerHTML = `<th>ID</th><th>Date</th><th>Name</th><th>Plan</th><th>Amount</th><th>Status</th><th>Actions</th>`;
+                let dataset = JSON.parse(localStorage.getItem('genz_gym_history')) || [];
+
+                if (search) {
+                    dataset = dataset.filter(i => 
+                        `#gz-${i.id}`.includes(search) || 
+                        i.id.toString().includes(search) || 
+                        i.name.toLowerCase().includes(search) || 
+                        i.date.toLowerCase().includes(search) ||
+                        (i.status && i.status.toLowerCase() === search)
+                    );
+                }
+
+                if(dataset.length === 0) {
+                    tableBody.innerHTML = `<tr><td colspan="7" class="no-data">No transactions logged yet.</td></tr>`;
+                    return;
+                }
+
+                tableBody.innerHTML = dataset.map(i => {
+                    const statusClass = i.status === "Unpaid" ? "text-warning" : "text-success";
+                    return `
+                    <tr>
+                        <td class="text-neon">#GZ-${i.id}</td>
+                        <td style="font-size:0.8rem; color:var(--text-ghost);">${i.date}</td>
+                        <td><strong>${i.name}</strong><br><span style="font-size:0.75rem; color:var(--text-ghost);">+91 ${i.phone}</span></td>
+                        <td style="font-size:0.85rem;">${i.plan}</td>
+                        <td class="text-success">${i.cost}</td>
+                        <td class="${statusClass}">${i.status || "Paid"}</td>
+                        <td>
+                            <div class="action-btn-group">
+                                <button class="btn-action-edit" onclick="initiateEditBilling(${i.id})">Edit</button>
+                                <button class="btn-action-delete" onclick="executeDeleteBilling(${i.id})">Delete</button>
+                            </div>
+                        </td>
+                    </tr>
+                `}).join('');
+            }
+        }
+
+        // --- MASTER FUSION RECONCILIATION AUDIT ENGINE ---
+        function getFilteredAuditDataset() {
+            const targetMonth = document.getElementById('auditMonthFilter').value;
+            const searchFilter = document.getElementById('auditSearchInput').value.toLowerCase().trim();
+            const statusFilter = document.getElementById('auditStatusFilter').value;
+
+            const roster = JSON.parse(localStorage.getItem('genz_gym_registrations')) || [];
+            const billingLedger = JSON.parse(localStorage.getItem('genz_gym_history')) || [];
+
+            let filtered = [];
+
+            roster.forEach(member => {
+                const memberName = member.name.trim();
+                const memberPhone = member.phone.toString().trim();
+
+                const paymentRecord = billingLedger.find(record => 
+                    record.phone.toString().trim() === memberPhone && 
+                    record.month === targetMonth
+                );
+
+                let finalStatus = "Unpaid"; 
+                if (paymentRecord) {
+                    finalStatus = paymentRecord.status || "Paid";
+                }
+
+                // Apply active filters
+                if (searchFilter && !memberName.toLowerCase().includes(searchFilter)) return;
+                if (statusFilter === "PAID" && finalStatus !== "Paid") return;
+                if (statusFilter === "UNPAID" && finalStatus === "Paid") return;
+
+                filtered.push({
+                    id: `#REG-${member.id}`,
+                    name: memberName,
+                    phone: memberPhone,
+                    month: targetMonth,
+                    status: finalStatus === "Paid" ? "PAID" : "OUTSTANDING"
+                });
+            });
+
+            return filtered;
+        }
+
+        function renderPaymentAuditMatrix() {
+            const targetMonth = document.getElementById('auditMonthFilter').value;
+            const searchFilter = document.getElementById('auditSearchInput').value.toLowerCase().trim();
+            const statusFilter = document.getElementById('auditStatusFilter').value;
+            const tableBody = document.getElementById('auditTableBody');
+
+            const roster = JSON.parse(localStorage.getItem('genz_gym_registrations')) || [];
+            const billingLedger = JSON.parse(localStorage.getItem('genz_gym_history')) || [];
+
+            if(roster.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="5" class="no-data">No members are currently registered in your database.</td></tr>`;
+                document.getElementById('auditCountPaid').innerText = "0";
+                document.getElementById('auditCountUnpaid').innerText = "0";
+                return;
+            }
+
+            let statsPaid = 0;
+            let statsUnpaid = 0;
+            let computedRowsHTML = "";
+
+            roster.forEach(member => {
+                const memberName = member.name.trim();
+                const memberPhone = member.phone.toString().trim();
+
+                const paymentRecord = billingLedger.find(record => 
+                    record.phone.toString().trim() === memberPhone && 
+                    record.month === targetMonth
+                );
+
+                let finalStatus = "Unpaid"; 
+                if (paymentRecord) {
+                    finalStatus = paymentRecord.status || "Paid";
+                }
+
+                if (finalStatus === "Paid") statsPaid++;
+                else statsUnpaid++;
+
+                if (searchFilter && !memberName.toLowerCase().includes(searchFilter)) return;
+                if (statusFilter === "PAID" && finalStatus !== "Paid") return;
+                if (statusFilter === "UNPAID" && finalStatus === "Paid") return;
+
+                const badgeClass = finalStatus === "Paid" ? "text-success" : "text-warning";
+                const badgeLabel = finalStatus === "Paid" ? "✓ PAID" : "⚠️ OUTSTANDING";
+                
+                let actionCellButton = "";
+                if(finalStatus !== "Paid") {
+                    actionCellButton = `<button class="btn-action-edit" style="border-color:var(--success-neon); color:var(--success-neon);" onclick="routeToBillingDesk('${memberName.replace(/'/g, "\\'")}', '${memberPhone}')">Collect Fee</button>`;
+                } else {
+                    actionCellButton = `<span style="font-size:0.75rem; color:var(--text-ghost);">Account Clean</span>`;
+                }
+
+                computedRowsHTML += `
+                    <tr>
+                        <td><strong>${memberName}</strong><br><span style="font-size:0.75rem; color:var(--text-ghost);">ID: #REG-${member.id}</span></td>
+                        <td>+91 ${memberPhone}</td>
+                        <td style="font-family: monospace; font-weight:600; color:var(--text-ghost);">${targetMonth}</td>
+                        <td class="${badgeClass}">${badgeLabel}</td>
+                        <td>${actionCellButton}</td>
+                    </tr>
+                `;
+            });
+
+            document.getElementById('auditCountPaid').innerText = statsPaid;
+            document.getElementById('auditCountUnpaid').innerText = statsUnpaid;
+
+            if(!computedRowsHTML) {
+                tableBody.innerHTML = `<tr><td colspan="5" class="no-data">No profile rows matched your specific filter metrics state.</td></tr>`;
+            } else {
+                tableBody.innerHTML = computedRowsHTML;
+            }
+        }
+
+        function downloadAuditMatrixXLSX() {
+            const targetMonth = document.getElementById('auditMonthFilter').value;
+            const dataToExport = getFilteredAuditDataset();
+
+            if (dataToExport.length === 0) {
+                alert("There is no filtered matrix data ready to build a spreadsheet row.");
+                return;
+            }
+
+            const cleanData = dataToExport.map(i => ({
+                "Member ID": i.id,
+                "Member Name": i.name,
+                "Phone Number": i.phone,
+                "Reconciliation Month": i.month,
+                "Payment Status State": i.status
+            }));
+
+            const timestampString = getSystemFormattedTimestamp();
+            const fileName = `Genz_Audit_Matrix_${targetMonth.replace(/ /g, "_")}_${timestampString}.xlsx`;
+
+            const worksheet = XLSX.utils.json_to_sheet(cleanData);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Reconciliation Audit");
+            XLSX.writeFile(workbook, fileName);
+        }
+
+        function routeToBillingDesk(name, phone) {
+            switchView('BILLING');
+            document.getElementById('memberName').value = name;
+            document.getElementById('memberPhone').value = phone;
+            
+            const targetAuditMonth = document.getElementById('auditMonthFilter').value;
+            if(targetAuditMonth) {
+                document.getElementById('paymentMonth').value = targetAuditMonth;
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function initiateEditRegistration(id) {
+            let dataset = JSON.parse(localStorage.getItem('genz_gym_registrations')) || [];
+            let match = dataset.find(i => i.id === id);
+            if(match) {
+                document.getElementById('regEditId').value = match.id;
+                document.getElementById('regName').value = match.name;
+                document.getElementById('regPhone').value = match.phone;
+                document.getElementById('regDob').value = match.dob;
+                document.getElementById('regAge').value = match.age;
+                document.getElementById('regWeight').value = match.weight;
+                document.getElementById('regHeight').value = match.height;
+                document.getElementById('regBlood').value = match.blood;
+                document.getElementById('regEmergency').value = match.emergency === "N/A" ? "" : match.emergency;
+                document.getElementById('regSubmitBtn').innerText = "Update Registration";
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function executeDeleteRegistration(id) {
+            if(confirm("Are you sure you want to drop this registration ledger entry?")) {
+                let dataset = JSON.parse(localStorage.getItem('genz_gym_registrations')) || [];
+                dataset = dataset.filter(i => i.id !== id);
+                localStorage.setItem('genz_gym_registrations', JSON.stringify(dataset));
+                renderCurrentTable();
+                updateStorageMetricsSummary();
+                updateWeeklyBroadcastDashboardIndicator();
+            }
+        }
+
+        function initiateEditBilling(id) {
+            let dataset = JSON.parse(localStorage.getItem('genz_gym_history')) || [];
+            let match = dataset.find(i => i.id === id);
+            if(match) {
+                document.getElementById('billEditId').value = match.id;
+                document.getElementById('memberName').value = match.name;
+                document.getElementById('memberPhone').value = match.phone;
+                document.getElementById('paymentMonth').value = match.month;
+                
+                if(match.cost.includes("500")) {
+                    document.getElementById('memberPlan').value = "Basic Pass (₹500)";
+                } else {
+                    document.getElementById('memberPlan').value = "Premium Pass (₹1000)";
+                }
+                document.getElementById('paymentStatus').value = match.status || "Paid";
+                document.getElementById('billSubmitBtn').innerText = "Update Bill Entry";
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function executeDeleteBilling(id) {
+            if(confirm("Are you sure you want to purge this fee record entry?")) {
+                let dataset = JSON.parse(localStorage.getItem('genz_gym_history')) || [];
+                dataset = dataset.filter(i => i.id !== id);
+                localStorage.setItem('genz_gym_history', JSON.stringify(dataset));
+                renderCurrentTable();
+                updateStorageMetricsSummary();
+                updateWeeklyBroadcastDashboardIndicator();
+            }
+        }
+
+        function downloadLedgerXLSX() {
+            const search = document.getElementById('historySearchInput').value.toLowerCase().trim();
+            const timestampString = getSystemFormattedTimestamp();
+            let dataset = [];
+            let fileName = "";
+            let cleanData = [];
+
+            if (currentMode === "REGISTRATION") {
+                dataset = JSON.parse(localStorage.getItem('genz_gym_registrations')) || [];
+                if (search) {
+                    dataset = dataset.filter(i => 
+                        `#reg-${i.id}`.includes(search) || 
+                        i.id.toString().includes(search) || 
+                        i.name.toLowerCase().includes(search) || 
+                        i.date.toLowerCase().includes(search)
+                    );
+                }
+                fileName = `Genz_Registrations_${timestampString}.xlsx`;
+                cleanData = dataset.map(i => ({
+                    "Registration ID": `#REG-${i.id}`, "Date Created": i.date, "Full Name": i.name, "Phone Number": i.phone, "Date of Birth": i.dob, "Age": i.age, "Weight (kg)": i.weight, "Height (cm)": i.height, "Blood Group": i.blood, "Emergency Contact": i.emergency
+                }));
+                
+                if(!search) regDownloadCount++;
+
+            } else {
+                dataset = JSON.parse(localStorage.getItem('genz_gym_history')) || [];
+                if (search) {
+                    dataset = dataset.filter(i => 
+                        `#gz-${i.id}`.includes(search) || 
+                        i.id.toString().includes(search) || 
+                        i.name.toLowerCase().includes(search) || 
+                        i.date.toLowerCase().includes(search) ||
+                        (i.status && i.status.toLowerCase() === search)
+                    );
+                }
+                fileName = `Genz_Payments_${timestampString}.xlsx`;
+                cleanData = dataset.map(i => ({
+                    "Receipt ID": `#GZ-${i.id}`, "Transaction Date": i.date, "Member Name": i.name, "Phone Number": i.phone, "Allocated Month": i.month, "Membership Plan": i.plan, "Amount Paid": i.cost, "Payment Status": i.status || "Paid"
+                }));
+
+                if(!search) billDownloadCount++;
+            }
+
+            if(cleanData.length === 0) {
+                alert("There is no data ready to build a spreadsheet row.");
+                return;
+            }
+
+            const worksheet = XLSX.utils.json_to_sheet(cleanData);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, currentMode === "REGISTRATION" ? "Registrations" : "Payments Summary");
+            XLSX.writeFile(workbook, fileName);
+            
+            updateStorageMetricsSummary();
+        }
+
+        // --- NEW FLEXIBLE SMART EXCEL UPLOAD ENGINE ---
+        function processImportedExcelPayload(inputElement) {
+            const uploadedFile = inputElement.files[0];
+            if (!uploadedFile) return;
+
+            const fileReader = new FileReader();
+            fileReader.onload = function(event) {
+                try {
+                    const arrayBufferData = event.target.result;
+                    const workbookInstance = XLSX.read(arrayBufferData, { type: 'array' });
+                    const structuralFirstSheetName = workbookInstance.SheetNames[0];
+                    const activeSheetJSONRows = XLSX.utils.sheet_to_json(workbookInstance.Sheets[structuralFirstSheetName]);
+
+                    if (activeSheetJSONRows.length === 0) {
+                        alert("The submitted Excel sheet contains no record entries.");
+                        return;
+                    }
+
+                    // Extract headers in lower case to find column index matching keywords safely
+                    const firstRowRecord = activeSheetJSONRows[0];
+                    const availableKeys = Object.keys(firstRowRecord);
+
+                    // Finder helper to search column names matching keywords
+                    const findKey = (keywords) => {
+                        return availableKeys.find(k => keywords.some(word => k.toLowerCase().includes(word)));
+                    };
+
+                    // Match registration properties
+                    const regIdKey = findKey(["registration id", "reg id", "member id"]);
+                    const dobKey = findKey(["date of birth", "dob"]);
+                    const fullNameKey = findKey(["full name", "member name", "profile", "name"]);
+                    const phoneKey = findKey(["phone number", "phone", "mobile"]);
+                    
+                    // Match transaction properties
+                    const receiptIdKey = findKey(["receipt id", "transaction id", "bill id", "id"]);
+                    const monthAllocatedKey = findKey(["allocated month", "fees month", "month"]);
+
+                    // DECIDE TABLE DESTINATION SMARTLY BASED ON DETECTED COLUMNS
+                    if (regIdKey || dobKey) {
+                        // TARGET: REGISTRATIONS
+                        let transformedRegistrations = activeSheetJSONRows.map(row => {
+                            let rawId = String(row[regIdKey] || "").replace("#REG-", "").trim();
+                            return {
+                                id: rawId ? parseInt(rawId) : Math.floor(Math.random() * 10000),
+                                date: String(row[findKey(["date created", "date"])] || ""),
+                                name: String(row[fullNameKey] || "Unnamed Entry"),
+                                phone: String(row[phoneKey] || ""),
+                                dob: String(row[dobKey] || ""),
+                                age: row[findKey(["age"])] ? parseInt(row[findKey(["age"])]) : 18,
+                                weight: row[findKey(["weight"])] ? parseFloat(row[findKey(["weight"])]) : 60,
+                                height: row[findKey(["height"])] ? parseInt(row[findKey(["height"])]) : 170,
+                                blood: String(row[findKey(["blood group", "blood"])] || "Unknown"),
+                                emergency: String(row[findKey(["emergency contact", "emergency"])] || "N/A")
+                            };
+                        });
+
+                        let maxRegId = transformedRegistrations.reduce((max, current) => current.id > max ? current.id : max, 0);
+                        localStorage.setItem('genz_reg_counter', maxRegId);
+                        localStorage.setItem('genz_gym_registrations', JSON.stringify(transformedRegistrations));
+                        alert(`🎉 Smart Match Success: Imported ${transformedRegistrations.length} profiles into Registrations.`);
+
+                    } else if (receiptIdKey && monthAllocatedKey) {
+                        // TARGET: BILLING HISTORY
+                        let transformedPayments = activeSheetJSONRows.map(row => {
+                            let rawId = String(row[receiptIdKey] || "").replace("#GZ-", "").trim();
+                            return {
+                                id: rawId ? parseInt(rawId) : Math.floor(Math.random() * 10000),
+                                date: String(row[findKey(["transaction date", "date"])] || ""),
+                                name: String(row[fullNameKey] || "Unnamed Member"),
+                                phone: String(row[phoneKey] || ""),
+                                month: String(row[monthAllocatedKey] || ""),
+                                plan: String(row[findKey(["membership plan", "plan"])] || "Basic Pass"),
+                                cost: String(row[findKey(["amount paid", "amount", "cost"])] || "₹500.00"),
+                                status: String(row[findKey(["payment status", "status"])] || "Paid")
+                            };
+                        });
+
+                        let maxBillId = transformedPayments.reduce((max, current) => current.id > max ? current.id : max, 0);
+                        localStorage.setItem('genz_receipt_counter', maxBillId);
+                        localStorage.setItem('genz_gym_history', JSON.stringify(transformedPayments));
+                        alert(`🎉 Smart Match Success: Restored ${transformedPayments.length} billing entries.`);
+                    } else {
+                        alert("❌ Error: Could not determine data layout style. Make sure column titles include clear descriptors like 'Name', 'Phone', 'ID' or 'Month'.");
+                        return;
+                    }
+
+                    // Refresh Views
+                    renderCurrentTable();
+                    updateStorageMetricsSummary();
+                    updateWeeklyBroadcastDashboardIndicator();
+                    if(currentMode === "AUDIT") renderPaymentAuditMatrix();
+                    
+                    inputElement.value = ""; // Clear file selector input stream
+
+                } catch (exception) {
+                    console.error(exception);
+                    alert("System error parsing data streams. Please recheck your spreadsheet template rows.");
+                }
+            };
+            fileReader.readAsArrayBuffer(uploadedFile);
+        }
+
+        function manualForceClearLedger() {
+            const regs = JSON.parse(localStorage.getItem('genz_gym_registrations')) || [];
+            const bills = JSON.parse(localStorage.getItem('genz_gym_history')) || [];
+            
+            if (regs.length === 0 && bills.length === 0) {
+                alert("The ledger cache is already empty (0MB used). No action needed!");
+                return;
+            }
+
+            if (regDownloadCount === 0 || billDownloadCount === 0) {
+                const proceedWithoutDownload = confirm(`⚠️ WARNING: You have missing structural sheet backups.\n\nCurrent Session Downloads -> [Registrations: ${regDownloadCount} | Payments: ${billDownloadCount}]\n\nWiping now will permanently lose data views that haven't been downloaded.\n\nDo you want to force delete it anyway?`);
+                if (!proceedWithoutDownload) return;
+            }
+
+            const finalConfirm = confirm("Are you completely sure you want to empty the browser ledger cache? This will drop current row listings back to 0 items and restore maximum speed.");
+            
+            if (finalConfirm) {
+                localStorage.removeItem('genz_gym_registrations');
+                localStorage.removeItem('genz_gym_history');
+
+                regDownloadCount = 0;
+                billDownloadCount = 0;
+
+                alert("⚡ Success! Browser database cache successfully cleared to 0MB. UI speed optimized.");
+                
+                renderCurrentTable();
+                updateStorageMetricsSummary();
+                updateWeeklyBroadcastDashboardIndicator();
+                if(currentMode === "AUDIT") renderPaymentAuditMatrix();
+            }
+        }
+
+        function runAutomaticWeeklyPurgeEngine() {
+            const today = new Date();
+            const currentYear = today.getFullYear();
+            
+            const d = new Date(Date.UTC(currentYear, today.getMonth(), today.getDate()));
+            const dayNum = d.getUTCDay() || 7;
+            d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+            const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+            const currentWeekNumber = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+            
+            const trackingKeyName = "genz_last_purged_week";
+            const lastPurgedWeek = parseInt(localStorage.getItem(trackingKeyName) || "0");
+
+            if (lastPurgedWeek === 0) {
+                localStorage.setItem(trackingKeyName, currentWeekNumber);
+                return;
+            }
+
+            if (currentWeekNumber !== lastPurgedWeek) {
+                const regs = JSON.parse(localStorage.getItem('genz_gym_registrations')) || [];
+                const bills = JSON.parse(localStorage.getItem('genz_gym_history')) || [];
+                
+                if (regs.length === 0 && bills.length === 0) {
+                    localStorage.setItem(trackingKeyName, currentWeekNumber);
+                    return;
+                }
+
+                if (regDownloadCount >= 1 && billDownloadCount >= 1) {
+                    localStorage.removeItem('genz_gym_registrations');
+                    localStorage.removeItem('genz_gym_history');
+                    localStorage.setItem(trackingKeyName, currentWeekNumber);
+                    
+                    regDownloadCount = 0;
+                    billDownloadCount = 0;
+
+                    alert("⚡ Genz System Notice: New operational week discovered. Prior database cache successfully moved to 0MB. UI speed optimized.");
+                    window.location.reload();
+                } else {
+                    const alertBar = document.getElementById('storageAlertBar');
+                    alertBar.className = "status-banner status-warn";
+                    document.getElementById('storageMessage').innerText = "⚠️ ATTENTION: New week started! Storage space optimization paused.";
+                    document.getElementById('storageDateCheck').innerText = "Download both Excel sheets or click the Red Button to clear.";
+                }
+            }
+        }
+
+        function updateStorageMetricsSummary() {
+            let totalBytes = 0;
+            for (let key in localStorage) {
+                if (localStorage.hasOwnProperty(key)) {
+                    totalBytes += (localStorage[key].length + key.length) * 2;
+                }
+            }
+            const totalMB = (totalBytes / (1024 * 1024)).toFixed(2);
+            const alertBar = document.getElementById('storageAlertBar');
+            
+            if (totalMB > 3.8) {
+                alertBar.className = "status-banner status-warn";
+                document.getElementById('storageMessage').innerText = `⚠️ Storage Warning: High Load (${totalMB}MB / 5.00MB Used)`;
+            } else {
+                if(document.getElementById('storageMessage').innerText.indexOf("ATTENTION") === -1) {
+                    alertBar.className = "status-banner status-good";
+                    document.getElementById('storageMessage').innerText = `⚡ Storage Profile: Stable (${totalMB}MB Used)`;
+                }
+            }
+            
+            const resetBtn = document.querySelector('.btn-purge-now');
+            if (resetBtn) {
+                resetBtn.innerText = ` WIPE DATA CACHE (${totalMB}MB)`;
+            }
+            
+            let statusDetail = "Safety Status: ";
+            if (regDownloadCount >= 1 && billDownloadCount >= 1) {
+                statusDetail += `Ready for safe reset. (Reg: ${regDownloadCount} | Fees: ${billDownloadCount} times)`;
+            } else {
+                statusDetail += `Downloaded Count [Reg: ${regDownloadCount} | Fees: ${billDownloadCount}]`;
+            }
+            document.getElementById('storageDateCheck').innerText = statusDetail;
+        }
+
+        // --- WEEKLY AUTOMATED SYSTEM BROADCAST ENGINE ---
+        function calculateGlobalSystemISOWeek() {
+            const today = new Date();
+            const target = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()));
+            const dayNum = target.getUTCDay() || 7;
+            target.setUTCDate(target.getUTCDate() + 4 - dayNum);
+            const yearStart = new Date(Date.UTC(target.getUTCFullYear(), 0, 1));
+            return Math.ceil((((target - yearStart) / 86400000) + 1) / 7);
+        }
+
+        function getMergedUniqueBroadcastingList() {
+            const registeredMembers = JSON.parse(localStorage.getItem('genz_gym_registrations')) || [];
+            const billRecords = JSON.parse(localStorage.getItem('genz_gym_history')) || [];
+            
+            let combined = [];
+            let seenPhones = new Set();
+
+            registeredMembers.forEach(m => {
+                let phone = m.phone.toString().trim();
+                if(phone && !seenPhones.has(phone)) {
+                    seenPhones.add(phone);
+                    combined.push({ id: `reg-${m.id}`, name: m.name.trim(), phone: phone });
+                }
+            });
+
+            billRecords.forEach(b => {
+                let phone = b.phone.toString().trim();
+                if(phone && !seenPhones.has(phone)) {
+                    seenPhones.add(phone);
+                    combined.push({ id: `bill-${b.id}`, name: b.name.trim(), phone: phone });
+                }
+            });
+
+            return combined;
+        }
+
+        function updateWeeklyBroadcastDashboardIndicator() {
+            const currentWeekNum = calculateGlobalSystemISOWeek();
+            const lastBroadcastWeekNum = parseInt(localStorage.getItem('genz_last_broadcast_week_fired') || "0");
+            const statusLabel = document.getElementById('broadcastStatusText');
+            const dispatchBtn = document.getElementById('sendBroadcastBtn');
+            const broadcastAllBtn = document.getElementById('broadcastAllBtn');
+            
+            const totalMembersToMessage = getMergedUniqueBroadcastingList().length;
+
+            if (totalMembersToMessage > 0) {
+                broadcastAllBtn.classList.remove('hidden');
+            } else {
+                broadcastAllBtn.classList.add('hidden');
+            }
+
+            if (lastBroadcastWeekNum === currentWeekNum) {
+                statusLabel.innerText = `✓ Batch processed. (${totalMembersToMessage} members inside active index)`;
+                statusLabel.style.color = "var(--success-neon)";
+                dispatchBtn.innerText = "⚙️ Open Desk";
+            } else {
+                statusLabel.innerText = `⚠️ Pending! Reminders not sent to ${totalMembersToMessage} global members.`;
+                statusLabel.style.color = "var(--warning-orange)";
+                dispatchBtn.innerText = "⚙️ Open Desk";
+            }
+        }
+
+        // --- DYNAMIC SEED STRING ENCRYPTER/GENERATOR ---
+        function generateReminderText(name) {
+            return `⚡ *Weekly Update from Genz Fitness Sivakasi!* ⚡\n\nHey ${name}! Reminding you to stay disciplined and *come regular to the gym* this week. Consistency is key to your gains! 💪\n\n💵 *Fee Reminder:* If you have already paid your membership fees for this month, thank you so much—please ignore this message! If your fees are still pending, kindly clear them at the front desk at your earliest convenience.\n\nLet's crush our goals this week! 🏋️‍♂️🔥`;
+        }
+
+        function triggerDirectWhatsApp() {
+            const webWhatsAppURL = `https://web.whatsapp.com/send?phone=91${currentPhoneNum}&text=${encodeURIComponent(msgPayload)}`;
+            window.open(webWhatsAppURL, 'GenzWhatsAppWorkspace');
+        }
+
+        function fireSingleProfileBroadcast(phone, name, btnElement) {
+            const standardReminderString = generateReminderText(name);
+            const webWhatsAppURL = `https://web.whatsapp.com/send?phone=91${phone}&text=${encodeURIComponent(standardReminderString)}`;
+            window.open(webWhatsAppURL, 'GenzWhatsAppWorkspace');
+            
+            if(btnElement) {
+                btnElement.innerText = "Dispatched ✓";
+                btnElement.classList.add('fired');
+                btnElement.style.background = "var(--border-glow)";
+            }
+            
+            const currentWeekNum = calculateGlobalSystemISOWeek();
+            localStorage.setItem('genz_last_broadcast_week_fired', currentWeekNum);
+            updateWeeklyBroadcastDashboardIndicator();
+        }
+
+        function startAutomatedBroadcastQueue() {
+            const globalQueueList = getMergedUniqueBroadcastingList();
+            if (globalQueueList.length === 0) {
+                alert("Operation Aborted: No registered profiles found in storage database.");
+                return;
+            }
+
+            const confirmRun = confirm(`This will process messages for ALL ${globalQueueList.length} members captured across application tables.\n\nThe portal will open EXACTLY ONE WhatsApp Web tab. Keep it open!\n\nEvery time you switch back to this dashboard, it will inject the next member parameter directly into that same tab without spawning duplicates.\n\nBegin sequence?`);
+            
+            if (confirmRun) {
+                broadcastQueue = globalQueueList;
+                currentQueueIndex = 0;
+                isQueueRunning = true;
+                
+                document.getElementById('broadcastDeskWrapper').classList.remove('hidden');
+                triggerWeeklyWhatsAppBroadcast(true); 
+                executeCurrentQueueIndexLink();
+            }
+        }
+
+        function executeCurrentQueueIndexLink() {
+            if (!isQueueRunning || currentQueueIndex >= broadcastQueue.length) {
+                isQueueRunning = false;
+                alert("🎉 Global Automation Sequence Complete! All combined listings have been processed successfully.");
+                updateWeeklyBroadcastDashboardIndicator();
+                return;
+            }
+
+            const member = broadcastQueue[currentQueueIndex];
+            const targetBtn = document.getElementById(`btn-queue-${member.id}`);
+            
+            if(targetBtn) {
+                targetBtn.innerText = "Processing...";
+                targetBtn.style.background = "var(--warning-orange)";
+            }
+
+            const standardReminderString = generateReminderText(member.name);
+            const webWhatsAppURL = `https://web.whatsapp.com/send?phone=91${member.phone}&text=${encodeURIComponent(standardReminderString)}`;
+            
+            window.open(webWhatsAppURL, 'GenzWhatsAppWorkspace');
+
+            if(targetBtn) {
+                targetBtn.innerText = "Dispatched ✓";
+                targetBtn.classList.add('fired');
+                targetBtn.style.background = "var(--border-glow)";
+            }
+
+            currentQueueIndex++;
+            
+            window.addEventListener('focus', function onWindowRefocus() {
+                window.removeEventListener('focus', onWindowRefocus);
+                if (isQueueRunning && currentQueueIndex < broadcastQueue.length) {
+                    setTimeout(() => {
+                        executeCurrentQueueIndexLink();
+                    }, 600); 
+                } else if (currentQueueIndex >= broadcastQueue.length) {
+                    executeCurrentQueueIndexLink();
+                }
+            });
+        }
+
+        function triggerWeeklyWhatsAppBroadcast(keepOpen = false) {
+            const globalQueueList = getMergedUniqueBroadcastingList();
+            const deskWrapper = document.getElementById('broadcastDeskWrapper');
+            
+            if (globalQueueList.length === 0) {
+                alert("Operation Aborted: There are no profile entries found across system database records.");
+                return;
+            }
+
+            if (!keepOpen && !deskWrapper.classList.contains('hidden')) {
+                deskWrapper.classList.add('hidden');
+                return;
+            }
+
+            deskWrapper.innerHTML = "";
+            deskWrapper.classList.remove('hidden');
+            
+            const titleBlock = document.createElement('div');
+            titleBlock.style.cssText = "color:var(--warning-orange); font-size:0.75rem; text-transform:uppercase; margin-bottom:10px; font-weight:bold; letter-spacing:0.5px;";
+            titleBlock.innerText = `Global Control Desk // Combined System Register Logs (${globalQueueList.length} Active Profiles):`;
+            deskWrapper.appendChild(titleBlock);
+            
+            globalQueueList.forEach(member => {
+                const itemRow = document.createElement('div');
+                itemRow.className = 'broadcast-row-item';
+                itemRow.innerHTML = `
+                    <div class="broadcast-row-info">
+                        <strong>${member.name}</strong><br>
+                        <span>+91 ${member.phone}</span>
+                    </div>
+                    <button class="btn-send-mini" id="btn-queue-${member.id}" onclick="fireSingleProfileBroadcast('${member.phone}', '${member.name}', this)">Send Message</button>
+                `;
+                deskWrapper.appendChild(itemRow);
+            });
+        }
+
+        function downloadInvoicePDF() { window.print(); }
+
+        document.getElementById('historySearchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') e.preventDefault();
+        });
+        document.getElementById('auditSearchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') e.preventDefault();
+        });
+
+        function resetActiveFormFieldsOnly() {
+            document.getElementById('regEditId').value = "";
+            document.getElementById('billEditId').value = "";
+            document.getElementById('regSubmitBtn').innerText = "Complete Registration";
+            document.getElementById('billSubmitBtn').innerText = "Submit & Lock Bill";
+        }
+
+        function resetActiveForm() {
+            document.getElementById('registrationForm').reset();
+            document.getElementById('billingForm').reset();
+            resetActiveFormFieldsOnly();
+            switchView(currentMode);
+        }
+
+        // --- LIFECYCLE RUNTIME STARTUP ---
+        populateDynamicMonths();
+        renderCurrentTable();
+        runAutomaticWeeklyPurgeEngine();
+        updateStorageMetricsSummary();
+        updateWeeklyBroadcastDashboardIndicator();
+    </script>
+</body>
+</html>
